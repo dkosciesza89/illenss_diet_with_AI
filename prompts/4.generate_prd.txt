@@ -1,0 +1,114 @@
+Jesteś doświadczonym menedżerem produktu, którego zadaniem jest stworzenie kompleksowego dokumentu wymagań produktu (PRD) w oparciu o poniższe opisy:
+
+<project_description>
+### Główny problem
+Dostosowywanie dostępnych w sieci przepisów kulinarnych do osobistych potrzeb i wymagań żywieniowych jest problematyczne. Aplikacja wykorzystuje AI oraz preferencje użytkownika do proponowania dopasowanych przepisów.
+
+### Najmniejszy zestaw funkcjonalności
+- Zapisywanie, odczytywanie, przeglądanie i usuwanie przepisów w formie tekstowej
+- Prosty system kont użytkowników do powiązania użytkownika z własnymi przepisami
+- Strona profilu użytkownika służąca do zapisywania preferencji żywnościowych
+- Integracja z AI umożliwiająca modyfikowanie przepisów wg preferencji żywieniowych użytkownika
+
+### Co NIE wchodzi w zakres MVP
+- Import przepisów z adresu URL
+- Bogata obsługa multimediów (np. zdjęć przepisów)
+- Udostępnianie przepisów dla innych użytkowników
+- Funkcje społecznościowe
+
+### Kryteria sukcesu
+- 90% użytkowników posiada wypełnioną sekcję preferencji żywnościowych w swoim profilu
+- 75% użytkowników generuje jeden lub więcej przepisów w tygodniu
+</project_description>
+
+<project_details>
+Functional requirements (MVP)
+Recipe CRUD: create, read, list, delete textual recipes with structured schema: title, servings, ingredients[] (name, quantity, unit), steps[] (10–500 chars each).
+User accounts: OAuth via Supabase Auth; user profile storing diagnosed condition, age, sex, allergies/intolerances, dietary style.
+Profile-driven AI adjustments: AI-driven ingredient substitution, portion scaling, and formatting; ingredient→nutrient mapping per serving included in AI prompts.
+Data & compliance: explicit consent capture for AI processing, immutable consent logs, pseudonymization before external calls, 7‑year consent retention, user data deletion flow.
+Analytics: event instrumentation for profile completion, recipe generation, and weekly generator activity.
+Persistence: store both raw text and structured JSONB representation for recipes in PostgreSQL.
+Key user stories and flows
+As a chronically ill user, I can create a recipe with structured ingredients and steps so AI can tailor it to my condition.
+As a user with a diagnosed condition, I can set my condition, age and sex in my profile so recipes are adapted to my nutrient targets.
+As a user, I can request a tailored recipe modification (substitute ingredients, scale portions) and receive results within 5s for simple ops.
+As a user, I can consent to AI processing and later revoke/delete my data.
+As a user, I can skip detailed onboarding preferences and complete them later via progressive profiling.
+Success criteria and measurement
+Profile completion target: 90% of users complete key preference fields (measured via profile_completed event and completeness %).
+Engagement target: 75% of users generate ≥1 recipe/week (measured via recipe_generated and weekly active generator metric).
+Performance SLO: simple AI operations median latency <5s (monitor via request tracing, latency histograms and synthetic tests).
+Compliance: consent logs persisted and accessible for audits; user deletions honored within agreed SLA.
+Implementation notes and technical approach
+Use Spring Boot + PostgreSQL; store structured recipe data in JSONB for flexible queries and AI usage.
+Precompute or cache ingredient→nutrient mappings from a curated food composition datasource to avoid per‑request heavy lookups.
+Use fast LLM endpoints or lightweight models for synchronous ops; implement async queue for heavy nutrition estimation jobs with progress UI.
+Instrument analytics (PostHog/GA4) and define funnels before launch.
+Keep auth extensible to add email/password later; integrate OAuth providers via Supabase Auth (enable providers per region/policy).
+Acceptance criteria per milestone
+Phase 1: working backend APIs, DB schema, Supabase OAuth integration, unit tests.
+Phase 2: recipe CRUD UI, profile UI, AI synchronous integrations (substitution, scaling, nutrient mapping), analytics events emitted.
+Phase 3: end‑to‑end testing, performance validation against <5s SLO for simple ops, consent logging and deletion flows, dashboards for KPIs.
+Security, privacy and compliance
+Pseudonymize user identifiers before external AI calls, strip direct PII.
+Immutable consent logs stored for 7 years.
+Provide a user‑initiated data deletion workflow and verify deletion from external AI logs where applicable. </prd_planning_summary>
+</project_details>
+
+Wykonaj następujące kroki, aby stworzyć kompleksowy i dobrze zorganizowany dokument:
+
+1. Podziel PRD na następujące sekcje:
+   a. Przegląd projektu
+   b. Problem użytkownika
+   c. Wymagania funkcjonalne
+   d. Granice projektu
+   e. Historie użytkownika
+   f. Metryki sukcesu
+
+2. W każdej sekcji należy podać szczegółowe i istotne informacje w oparciu o opis projektu i odpowiedzi na pytania wyjaśniające. Upewnij się, że:
+   - Używasz jasnego i zwięzłego języka
+   - W razie potrzeby podajesz konkretne szczegóły i dane
+   - Zachowujesz spójność w całym dokumencie
+   - Odnosisz się do wszystkich punktów wymienionych w każdej sekcji
+
+3. Podczas tworzenia historyjek użytkownika i kryteriów akceptacji
+   - Wymień WSZYSTKIE niezbędne historyjki użytkownika, w tym scenariusze podstawowe, alternatywne i skrajne.
+   - Przypisz unikalny identyfikator wymagań (np. US-001) do każdej historyjki użytkownika w celu bezpośredniej identyfikowalności.
+   - Uwzględnij co najmniej jedną historię użytkownika specjalnie dla bezpiecznego dostępu lub uwierzytelniania, jeśli aplikacja wymaga identyfikacji użytkownika lub ograniczeń dostępu.
+   - Upewnij się, że żadna potencjalna interakcja użytkownika nie została pominięta.
+   - Upewnij się, że każda historia użytkownika jest testowalna.
+
+Użyj następującej struktury dla każdej historii użytkownika:
+- ID
+- Tytuł
+- Opis
+- Kryteria akceptacji
+
+4. Po ukończeniu PRD przejrzyj go pod kątem tej listy kontrolnej:
+   - Czy każdą historię użytkownika można przetestować?
+   - Czy kryteria akceptacji są jasne i konkretne?
+   - Czy mamy wystarczająco dużo historyjek użytkownika, aby zbudować w pełni funkcjonalną aplikację?
+   - Czy uwzględniliśmy wymagania dotyczące uwierzytelniania i autoryzacji (jeśli dotyczy)?
+
+5. Formatowanie PRD:
+   - Zachowaj spójne formatowanie i numerację.
+   - Nie używaj pogrubionego formatowania w markdown ( ** ).
+   - Wymień WSZYSTKIE historyjki użytkownika.
+   - Sformatuj PRD w poprawnym markdown.
+
+Przygotuj PRD z następującą strukturą:
+
+```markdown
+# Dokument wymagań produktu (PRD) - {{app-name}}
+## 1. Przegląd produktu
+## 2. Problem użytkownika
+## 3. Wymagania funkcjonalne
+## 4. Granice produktu
+## 5. Historyjki użytkowników
+## 6. Metryki sukcesu
+```
+
+Pamiętaj, aby wypełnić każdą sekcję szczegółowymi, istotnymi informacjami w oparciu o opis projektu i nasze pytania wyjaśniające. Upewnij się, że PRD jest wyczerpujący, jasny i zawiera wszystkie istotne informacje potrzebne do dalszej pracy nad produktem.
+
+Ostateczny wynik powinien składać się wyłącznie z PRD zgodnego ze wskazanym formatem w markdown, który zapiszesz w pliku .ai/prd.md

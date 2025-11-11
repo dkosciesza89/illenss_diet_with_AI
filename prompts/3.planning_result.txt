@@ -1,0 +1,63 @@
+<conversation_summary> <decisions></decisions>
+Target medical conditions for MVP: Type 1 diabetes, celiac disease, lactose intolerance.
+Minimal tracked nutrient set defined for MVP: calories, protein, carbohydrates, fats, fiber, sodium, sugars, calcium, iron, vitamin D, vitamin B12, omega-3, vitamin C (plus condition‑specific priorities).
+Recipe data model required and enforced: title, servings, ingredients[] (name, quantity, unit), steps[] (each step 10–500 chars); store structured representation in DB (JSONB).
+Required profile fields at signup: diagnosed condition, age, sex; allergies/intolerances and dietary style captured as profile attributes.
+Auth for MVP: OAuth via Supabase Auth; postpone email/password signup.
+AI SLO: synchronous simple operations (ingredient→nutrient mapping, substitution, scaling, formatting) must respond <5s; heavy ops (detailed nutrition reports) handled async.
+Data handling and compliance: explicit consent for AI processing, immutable consent logs retained 7 years, pseudonymize/anonymize PII before external AI calls, support user‑initiated deletion.
+Analytics instrumentation: track profile_completed, recipe_generated, and weekly active generator events to measure success criteria.
+Onboarding: implement a short optional preference step (3–5 questions) and progressive profiling later.
+Delivery plan and roles confirmed: Phase 1 (1 week) backend + Supabase OAuth; Phase 2 (2 weeks) profile UI + recipe CRUD + AI integration; Phase 3 (1 week) testing + analytics; add 1‑week buffer. Roles: PM, Backend Engineer, Frontend Engineer, AI Integrator, QA, DevOps.
+<matched_recommendations>
+Define 2–3 personas and target conditions — implemented as explicit target conditions for MVP.
+Enforce structured recipe schema and store JSONB representation for AI usage — accepted and specified.
+Require core profile fields and map nutrient targets from profile to AI prompts — accepted (condition, age, sex; micronutrient mapping to AI).
+Use Supabase Auth for OAuth and keep auth model extensible — accepted.
+Prioritize synchronous simple AI operations to meet <5s and route heavy computations to async jobs — accepted.
+Implement consent logging, pseudonymization, and 7‑year retention policy with user deletion support — accepted.
+Instrument analytics events and funnels for profile completion and recipe generation — accepted.
+Use precomputed ingredient→nutrient lookup and caching to meet latency SLO — recommended and aligned with SLO requirement.
+Onboarding: short optional preference step + progressive profiling to drive profile data — accepted.
+Phased delivery plan with roles and buffer week — accepted. </matched_recommendations>
+<prd_planning_summary> Functional requirements (MVP)
+Recipe CRUD: create, read, list, delete textual recipes with structured schema: title, servings, ingredients[] (name, quantity, unit), steps[] (10–500 chars each).
+User accounts: OAuth via Supabase Auth; user profile storing diagnosed condition, age, sex, allergies/intolerances, dietary style.
+Profile-driven AI adjustments: AI-driven ingredient substitution, portion scaling, and formatting; ingredient→nutrient mapping per serving included in AI prompts.
+Data & compliance: explicit consent capture for AI processing, immutable consent logs, pseudonymization before external calls, 7‑year consent retention, user data deletion flow.
+Analytics: event instrumentation for profile completion, recipe generation, and weekly generator activity.
+Persistence: store both raw text and structured JSONB representation for recipes in PostgreSQL.
+Key user stories and flows
+As a chronically ill user, I can create a recipe with structured ingredients and steps so AI can tailor it to my condition.
+As a user with a diagnosed condition, I can set my condition, age and sex in my profile so recipes are adapted to my nutrient targets.
+As a user, I can request a tailored recipe modification (substitute ingredients, scale portions) and receive results within 5s for simple ops.
+As a user, I can consent to AI processing and later revoke/delete my data.
+As a user, I can skip detailed onboarding preferences and complete them later via progressive profiling.
+Success criteria and measurement
+Profile completion target: 90% of users complete key preference fields (measured via profile_completed event and completeness %).
+Engagement target: 75% of users generate ≥1 recipe/week (measured via recipe_generated and weekly active generator metric).
+Performance SLO: simple AI operations median latency <5s (monitor via request tracing, latency histograms and synthetic tests).
+Compliance: consent logs persisted and accessible for audits; user deletions honored within agreed SLA.
+Implementation notes and technical approach
+Use Spring Boot + PostgreSQL; store structured recipe data in JSONB for flexible queries and AI usage.
+Precompute or cache ingredient→nutrient mappings from a curated food composition datasource to avoid per‑request heavy lookups.
+Use fast LLM endpoints or lightweight models for synchronous ops; implement async queue for heavy nutrition estimation jobs with progress UI.
+Instrument analytics (PostHog/GA4) and define funnels before launch.
+Keep auth extensible to add email/password later; integrate OAuth providers via Supabase Auth (enable providers per region/policy).
+Acceptance criteria per milestone
+Phase 1: working backend APIs, DB schema, Supabase OAuth integration, unit tests.
+Phase 2: recipe CRUD UI, profile UI, AI synchronous integrations (substitution, scaling, nutrient mapping), analytics events emitted.
+Phase 3: end‑to‑end testing, performance validation against <5s SLO for simple ops, consent logging and deletion flows, dashboards for KPIs.
+Security, privacy and compliance
+Pseudonymize user identifiers before external AI calls, strip direct PII.
+Immutable consent logs stored for 7 years.
+Provide a user‑initiated data deletion workflow and verify deletion from external AI logs where applicable. </prd_planning_summary>
+<unresolved_issues>
+Precise daily target values per condition and age/sex groups (exact numeric targets for each tracked micronutrient remain to be defined).
+Source and licensing of the food composition database (authoritative dataset for ingredient→nutrient mappings) and update cadence.
+Choice of external AI/LLM provider(s) and contract/privacy constraints (e.g., data residency, allowed data transmission).
+Exact OAuth provider list to enable in Supabase (e.g., Google, Apple) and region/legal requirements for identity providers.
+Accuracy thresholds and validation strategy for nutrient mapping and nutrition estimates (acceptable error bounds).
+Scalability targets (expected QPS/concurrent users) for sizing autoscaling and caching layers.
+Acceptance criteria and test cases for compliance audits (format, exportability, and retention verification).
+Localization and accessibility requirements (languages, WCAG) if needed for target users. </unresolved_issues> </conversation_summary>
