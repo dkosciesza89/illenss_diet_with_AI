@@ -1,0 +1,38 @@
+Cel PoC — krótkie streszczenie: Stwórz Proof of Concept, który weryfikuje kluczową funkcjonalność aplikacji Personalized Recipe Assistant: mapowanie składników przepisu na podstawowe wartości odżywcze i prostą
+AI napędzaną modyfikację przepisu (substytucje składników i skalowanie porcji) dostosowaną do jednego z trzech docelowych schorzeń. 
+PoC ma być minimalny, szybki do wykonania i pokazowy — tylko to, co konieczne do potwierdzenia koncepcji.
+Kontekst techniczny:
+Preferowane technologie dla PoC (rekomendacja): Backend minimalny - Supabase Auth (OAuth) + PostgreSQL (JSONB) Frontend minimalny - React, Astro, TypeScript.
+AI: użyj usługi Openrouter.ai (dostęp do modeli)
+Dane: trzymamy mapping ingredient→nutrient w lokalnej tabeli(mały dataset do PoC).
+Wymagania PoC (konkretne, testowalne):
+Endpoints API (backend minimalny):
+POST /recipes
+przyjmuje JSON: { title, servings, ingredients: [{ name, quantity, unit }], steps: [string] }
+walidacja: title non-empty, każdy step 10–500 znaków, każdy ingredient ma name+quantity+unit
+przechowuje surowy tekst i JSONB w Postgres
+GET /recipes/:id
+zwraca surowy tekst i strukturę JSONB
+GET /recipes (lista dla zalogowanego usera)
+POST /ai/modify
+wejście: { recipeId | recipePayload, operation: "substitute"|"scale"|"map_nutrients", userProfile: { disease, age, sex, allergies[] } }
+odpowiedź (synchronous dla prostych operacji): zmodyfikowany przepis w strukturze JSON oraz agregowane wartości odżywcze per porcję i % dziennego celu (zgodnie z profilem) — dla
+PoC obsłużyć tylko prostą mapę i proste substytucje
+Dataset minimalny (dołączony do PoC — użyj go jako źródła mappingu):
+Schorzenia docelowe: type1_diabetes, celiac, lactose_intolerance
+Minimalne mikroskładniki prozdrowotne: calories, protein_g, carbs_g, fat_g, fiber_g, calcium_mg, iron_mg, vitamin_d_μg, omega3_g
+Przykładowe ingredient→nutrient (wartości na 100g):
+chicken_breast: { calories:165, protein_g:31, carbs_g:0, fat_g:3.6, fiber_g:0, calcium_mg:15, iron_mg:1, vitamin_d_μg:0, omega3_g:0.02 }
+whole_milk: { calories:61, protein_g:3.2, carbs_g:4.8, fat_g:3.3, fiber_g:0, calcium_mg:113, iron_mg:0, vitamin_d_μg:0.05, omega3_g:0.02 }
+wheat_flour: { calories:364, protein_g:10, carbs_g:76, fat_g:1, fiber_g:2.7, calcium_mg:15, iron_mg:3.6, vitamin_d_μg:0, omega3_g:0.1 }
+olive_oil: { calories:884, protein_g:0, carbs_g:0, fat_g:100, fiber_g:0, calcium_mg:1, iron_mg:0.6, vitamin_d_μg:0, omega3_g:0.76 }
+spinach: { calories:23, protein_g:2.9, carbs_g:3.6, fat_g:0.4, fiber_g:2.2, calcium_mg:99, iron_mg:2.7, vitamin_d_μg:0, omega3_g:0.14 }
+salmon: { calories:208, protein_g:20, carbs_g:0, fat_g:13, fiber_g:0, calcium_mg:9, iron_mg:0.5, vitamin_d_μg:13, omega3_g:1.8 }
+Minimalne dzienne cele (przykładowe, per 24h) dla PoC (użyć prostych wartości):
+type1_diabetes: focus on carbs limit (targetCarbs_g: 130), protein_g:50, omega3_g:1.1
+celiac: focus on gluten avoidance (for PoC, flag ingredients containing wheat_flour), iron_g target: 18
+lactose_intolerance: detect dairy ingredients (whole_milk), ensure calcium target: 1000 mg (or flag substitutions)
+Testy i walidacja:
+Dostarczone artefakty PoC:
+Kod backend z readme, mínima instructions to run locally.
+Mały dataset JSON ingredient→nutrient i mapping disease→targets.
