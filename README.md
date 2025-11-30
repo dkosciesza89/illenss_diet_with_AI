@@ -1,6 +1,6 @@
 # Personalized Recipe Assistant - Proof of Concept
 
-A minimal PoC demonstrating core functionality: recipe storage, ingredient-to-nutrient mapping, and AI-powered recipe modifications tailored to specific health conditions.
+A minimal PoC demonstrating core functionality: recipe storage, ingredient to nutrient mapping, and AI-powered recipe modifications tailored to specific health conditions.
 
 ## Features
 
